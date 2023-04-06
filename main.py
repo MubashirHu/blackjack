@@ -1,13 +1,16 @@
-import player
-import intro
-import blackjack
+import BlackJack
 
 def main():
-    moderator = intro.blackJackModerator()
-    dealer = player.Player("dealer", 23)
+    dealer = BlackJack.blackJackModerator()
+    
+    ##dealer.Entry()
+    print(len(dealer.deck))
+    dealer.dealCards()
+    print(len(dealer.deck))
+    print(dealer.handVal)
+    
+    while(dealer.startedGame):
+        pass
 
-    moderator.Entry()
-    
-    
 if __name__ == "__main__":
     main()
