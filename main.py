@@ -1,8 +1,8 @@
-import BlackJack
+import BJ
 import player
 def main():
 
-    dealer = BlackJack.blackJackModerator()
+    dealer = BJ.blackJackModerator()
     p1 = player.Player("Mubashir", 23)
     p2 = player.Player("mike", 34)
 
