@@ -1,5 +1,6 @@
 import BJ
 import player
+
 def main():
 
     dealer = BJ.blackJackModerator()
@@ -14,12 +15,10 @@ def main():
     
     while(dealer.startedGame):
 
-        # deal cards
-        dealer.dealCards()
-
-        # display the cards 
-        dealer.displayCards()
-        dealer.checkforHitorStand()
-
+        if(not dealer.hasDealtFirstTwoCards):
+            dealer.dealCards()
+        else:
+            dealer.checkforHitorStand()
+                         
 if __name__ == "__main__":
     main()

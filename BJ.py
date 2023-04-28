@@ -76,6 +76,7 @@ class blackJackModerator:
 
     def dealCards(self):
         random.shuffle(self.deck)
+        self.checkForBust()
 
         if(self.hasDealtFirstTwoCards == False):
             #deal 2 to dealer
@@ -90,14 +91,14 @@ class blackJackModerator:
             for i in range(len(self.playerCount)):
                 self.hitPlayer(i,1)
 
+        self.displayCards()
+
 
         self.hasDealtFirstTwoCards = True
         #self.startedGame = False
 
     def hitDealer(self):
         self.hand.append(self.deck.pop())
-
-        print(len(self.deck))
 
     def hitPlayer(self, playerNumber, cards):
         for i in range(cards):
@@ -113,14 +114,29 @@ class blackJackModerator:
             if(temp == 'h'):
                 #deal one card
                 self.hitPlayer(eachplayer, 1)
-                
+
             elif (temp == 's'):
                 #deal no card
                 pass
- 
+
+        self.displayCards()
+        
+    def checkForBust(self):
+        for i in reversed(range(len(self.playerCount))):
+            if(self.playerCount[i].handVal < 21):
+                #nothing
+                pass
+            elif(self.playerCount[i].handVal == 21):
+                print(self.playerCount[i].player_name, "YOU WON!")
+                return 0
+            else:
+                print(self.playerCount[i].player_name, "has Busted!")
+                self.playerCount.remove(self.playerCount[i])
+            
     def getHandValue(self, playerNumber):
 
         if (playerNumber == 304):
+            self.handVal = 0
             #get hand value of the dealer
             for i in range(len(self.hand)):
                 temp = self.hand[i][1] 
@@ -139,6 +155,7 @@ class blackJackModerator:
                 
             return self.handVal
         else:
+            self.playerCount[playerNumber].handVal = 0
             for i in range(len(self.playerCount[playerNumber].hand)):
                 temp = self.playerCount[playerNumber].hand[i][1] 
                 if temp == "J":
@@ -163,8 +180,8 @@ class blackJackModerator:
 
         #print each players cards that they have in hand
         for eachplayer in range(len(self.playerCount)):
-            print("each player: ", eachplayer)
+            print("Player: ", self.playerCount[eachplayer].player_name)
             for eachCard in range(len(self.playerCount[eachplayer].hand)):
                 print(self.playerCount[eachplayer].hand[eachCard])
             
-            print("Player ", eachplayer, "Value: ", self.getHandValue(eachplayer), "\n\n")
+            print(self.playerCount[eachplayer].player_name, "Hand Value: ", self.getHandValue(eachplayer), "\n\n")
