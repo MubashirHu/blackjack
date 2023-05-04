@@ -25,8 +25,6 @@ class blackJackModerator:
 
         self.howManyPlaying()
 
-        self.shouldGameBegin()
-            
     def checkAge(self, player_object):
         if(player_object.player_age < 18):
             print(player_object.player_name, "can't play... too young")
@@ -52,8 +50,8 @@ class blackJackModerator:
     def howManyPlaying(self):
         print("How many want to play?")
         x = int(input())
-        print(x)
-        if (x > 1 or x < 3):
+
+        if (x < 4):
             for i in range(int(x)):
                 print("Enter a name for player{}: ".format(i+1))
                 name = input()
@@ -64,8 +62,16 @@ class blackJackModerator:
 
             for i in range(len(self.playerCount)):
                 self.checkAge(self.playerCount[i])
+
+            self.shouldGameBegin()
         else:
             print("No players...")
+            self.resetGame()
+
+    def resetGame(self):
+        self.startedGame = False
+        self.hasDealtFirstTwoCards = False
+        
 
     def shouldGameBegin(self):
         print("Would you like to begin the game?")
@@ -163,7 +169,6 @@ class blackJackModerator:
         self.hand.clear()
 
     def getHandValue(self, playerNumber):
-
         if (playerNumber == 304):
             self.handVal = 0
             #get hand value of the dealer
@@ -201,18 +206,21 @@ class blackJackModerator:
                 self.playerCount[playerNumber].handVal += temp
                 
             return self.playerCount[playerNumber].handVal
-
+        
+    def resetGame(self):
+        self.startedGame = False
+        self.hasDealtFirstTwoCards = False
+        
     # Function to clear the terminal screen
     def clear(self):
         os.system('cls' if os.name == 'nt' else 'clear') 
     
     def displayCards(self):
-
         self.clear()        
         print("------------------------------------------------------------------------------------------------\n")
         print("-------------------------------BlackJack game currently active----------------------------------\n")
         print("Player count:", len(self.playerCount), "\n")
-        print("Cards remaining:", len(self.deck))
+        print("Cards remaining in deck", len(self.deck))
         print("------------------------------------------------------------------------------------------------\n")
         
         #print each players cards that they have in hand
@@ -226,10 +234,9 @@ class blackJackModerator:
                 print("Player: |", self.playerCount[eachplayer].player_name, "|")
                 for eachCard in range(len(self.playerCount[eachplayer].hand)):
                     print(self.playerCount[eachplayer].hand[eachCard])
-                
+
                 print("----------------------------")
-                
                 print(self.playerCount[eachplayer].player_name, "Hand Value: ", self.getHandValue(eachplayer), "\n\n")
         else:
-            self.startedGame = False
+            self.resetGame()
             print("Round of black jack is over!")
