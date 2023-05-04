@@ -1,5 +1,6 @@
 from player import Player
 import random
+import os
 
 class blackJackModerator:
 
@@ -76,11 +77,12 @@ class blackJackModerator:
 
     def dealCards(self):
         random.shuffle(self.deck)
-        self.checkForBust()
-
+        
         if(self.hasDealtFirstTwoCards == False):
             #deal 2 to dealer
-            self.hitDealer()
+            for i in range(2):
+                self.hitDealer()
+            
             #deal 2 to players
             for i in range(len(self.playerCount)):
                 self.hitPlayer(i,2)
@@ -107,32 +109,48 @@ class blackJackModerator:
         print(len(self.deck))
 
     def checkforHitorStand(self):
-        for eachplayer in range(len(self.playerCount)):
-            print(self.playerCount[eachplayer].player_name, ", Hit or Stand? h/s")
+        for currentPlayer in reversed(range(len(self.playerCount))):
+            print(self.playerCount[currentPlayer].player_name, ", Hit or Stand? h/s")
             temp = input()
 
             if(temp == 'h'):
                 #deal one card
-                self.hitPlayer(eachplayer, 1)
+                self.hitPlayer(currentPlayer, 1)
+                self.displayCards()
+                self.checkforBust(currentPlayer)
+                self.displayCards()
+                
 
             elif (temp == 's'):
-                #deal no card
-                pass
+                self.displayCards()
+                self.compareWithDealer(currentPlayer)
+                self.displayCards()
+                
+    def checkforBust(self, playerID):
+        if(self.playerCount[playerID].handVal > 21):
+            print(self.playerCount[playerID].player_name, "...has Busted! -- 0")
+            self.playerCount.remove(self.playerCount[playerID])
+            self.startedGame = False
 
-        self.displayCards()
-        
-    def checkForBust(self):
-        for i in reversed(range(len(self.playerCount))):
-            if(self.playerCount[i].handVal < 21):
-                #nothing
-                pass
-            elif(self.playerCount[i].handVal == 21):
-                print(self.playerCount[i].player_name, "YOU WON!")
-                return 0
-            else:
-                print(self.playerCount[i].player_name, "has Busted!")
-                self.playerCount.remove(self.playerCount[i])
+        elif(self.playerCount[playerID].handVal == 21):
+            print(self.playerCount[playerID].player_name, "...BlackJack!")
+            self.playerCount.remove(self.playerCount[playerID])
+            self.startedGame = False
+            return 0
+        else:
+            pass
             
+
+    def compareWithDealer(self, playerID):
+        if(self.playerCount[playerID].handVal < 21 and self.playerCount[playerID].handVal < self.handVal):
+            print("Dealer wins over : ", self.playerCount[playerID].player_name)
+            self.playerCount.remove(self.playerCount[playerID])
+        else:
+            print(self.playerCount[playerID].player_name, "has Won!")
+            self.playerCount.remove(self.playerCount[playerID])
+
+
+    
     def getHandValue(self, playerNumber):
 
         if (playerNumber == 304):
@@ -172,16 +190,29 @@ class blackJackModerator:
                 self.playerCount[playerNumber].handVal += temp
                 
             return self.playerCount[playerNumber].handVal
-        
+
+    # Function to clear the terminal screen
+    def clear(self):
+        os.system('cls' if os.name == 'nt' else 'clear') 
+    
     def displayCards(self):
+
+        #self.clear()        
+        print("------------------------------------------------------------------------------------------------\n")
+        print("-------------------------------BlackJack game currently active----------------------------------\n")
+        print("Player count:", len(self.playerCount), "\n")
+        print("------------------------------------------------------------------------------------------------\n")
+        
         #print Dealers cards
         print(self.hand)
         print("Dealer Value: ", self.getHandValue(304), "\n\n\n")
 
         #print each players cards that they have in hand
         for eachplayer in range(len(self.playerCount)):
-            print("Player: ", self.playerCount[eachplayer].player_name)
+            print("Player: |", self.playerCount[eachplayer].player_name, "|")
             for eachCard in range(len(self.playerCount[eachplayer].hand)):
                 print(self.playerCount[eachplayer].hand[eachCard])
+            
+            print("----------------------------")
             
             print(self.playerCount[eachplayer].player_name, "Hand Value: ", self.getHandValue(eachplayer), "\n\n")

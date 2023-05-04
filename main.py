@@ -5,7 +5,7 @@ def main():
 
     dealer = BJ.blackJackModerator()
     p1 = player.Player("Mubashir", 23)
-    p2 = player.Player("mike", 34)
+    p2 = player.Player("Mike", 34)
 
     dealer.playerCount.append(p1)
     dealer.playerCount.append(p2)
@@ -19,6 +19,7 @@ def main():
             dealer.dealCards()
         else:
             dealer.checkforHitorStand()
-                         
+    
+                                     
 if __name__ == "__main__":
     main()
