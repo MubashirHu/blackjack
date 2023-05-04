@@ -7,5 +7,6 @@ class Player:
         self.player_age = age
         self.hand = []
         self.handVal = 0
+        balance = 0
 
         
