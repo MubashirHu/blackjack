@@ -15,6 +15,7 @@ def main():
         while(dealer.startedGame):
 
             if(not dealer.hasDealtFirstTwoCards):
+                dealer.getBetsFromPlayers()
                 dealer.dealCards()
             else:
                 dealer.checkforHitorStand()

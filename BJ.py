@@ -8,8 +8,11 @@ class blackJackModerator:
         self.startedGame = False
         self.hasDealtFirstTwoCards = False
         self.playerCount = []
+        self.playerCountScore = []
         self.hand = []
         self.handVal = 0
+        self.winner = ""
+        self.max = 0
         self.deck = [("Hearts", 2), ("Hearts", 3), ("Hearts", 4), ("Hearts", 5), ("Hearts", 6), ("Hearts", 7), ("Hearts", 8), ("Hearts", 9), ("Hearts", 10), ("Hearts", "J"), ("Hearts", "Q"), ("Hearts", "K"), ("Hearts", "A"),
         ("Diamonds", 2), ("Diamonds", 3), ("Diamonds", 4), ("Diamonds", 5), ("Diamonds", 6), ("Diamonds", 7), ("Diamonds", 8), ("Diamonds", 9), ("Diamonds", 10), ("Diamonds", "J"), ("Diamonds", "Q"), ("Diamonds", "K"), ("Diamonds", "A"),
         ("Clubs", 2), ("Clubs", 3), ("Clubs", 4), ("Clubs", 5), ("Clubs", 6), ("Clubs", 7), ("Clubs", 8), ("Clubs", 9), ("Clubs", 10), ("Clubs", "J"), ("Clubs", "Q"), ("Clubs", "K"), ("Clubs", "A"),
@@ -60,7 +63,7 @@ class blackJackModerator:
                 playerobj = Player(name, int(age))
                 self.playerCount.append(playerobj)
 
-            for i in range(len(self.playerCount)):
+            for i in reversed(range(len(self.playerCount))):
                 self.checkAge(self.playerCount[i])
 
             self.shouldGameBegin()
@@ -72,7 +75,6 @@ class blackJackModerator:
         self.startedGame = False
         self.hasDealtFirstTwoCards = False
         
-
     def shouldGameBegin(self):
         print("Would you like to begin the game?")
         x = input()
@@ -80,6 +82,9 @@ class blackJackModerator:
             self.startedGame = True
         else:
             self.startedGame = False
+
+    def getBetsFromPlayers(self):
+        pass
 
     def dealCards(self):
         random.shuffle(self.deck)
@@ -135,31 +140,47 @@ class blackJackModerator:
         elif(self.playerCount[playerID].handVal == 21):
             print(self.playerCount[playerID].player_name, "...BlackJack!")
             self.retreiveCardsfromPlayer(playerID)
+            self.playerCountScore.append(self.playerCount[playerID])
             self.playerCount.remove(self.playerCount[playerID])
+
         else:
             pass
 
-        if(len(self.playerCount) < 1):
-            self.retreiveCardsfromDealer()
+        self.checkforPlayers()
             
     def compareWithDealer(self, playerID):
         if(self.playerCount[playerID].handVal < 21 and self.playerCount[playerID].handVal < self.handVal):
             print("Dealer wins over : ", self.playerCount[playerID].player_name)
             self.retreiveCardsfromPlayer(playerID)
             self.playerCount.remove(self.playerCount[playerID])
-            
+
         elif(self.playerCount[playerID].handVal == self.handVal):
             print("Push")
             self.retreiveCardsfromPlayer(playerID)
             self.playerCount.remove(self.playerCount[playerID])
+
         else:
             print(self.playerCount[playerID].player_name, "has Won!")
             self.retreiveCardsfromPlayer(playerID)
+            self.playerCountScore.append(self.playerCount[playerID])
             self.playerCount.remove(self.playerCount[playerID])
 
+        self.checkforPlayers()
+
+    def checkforPlayers(self):
         if(len(self.playerCount) < 1):
             self.retreiveCardsfromDealer()
-            
+                       
+            for i in range(len(self.playerCountScore)):
+                if(self.playerCountScore[i].handVal > self.max):
+                    self.max = self.playerCountScore[i].handVal
+                    self.winner = self.playerCountScore[i].player_name
+
+            if(self.max != 0):
+                print("The winner is :", self.winner, "with a score of : ", self.max)
+            else:
+                print("Dealer wins...unlucky!")
+ 
     def retreiveCardsfromPlayer(self, playerID):
         self.deck.extend(self.playerCount[playerID].hand)
         self.playerCount[playerID].hand.clear()
@@ -210,18 +231,26 @@ class blackJackModerator:
     def resetGame(self):
         self.startedGame = False
         self.hasDealtFirstTwoCards = False
+        self.playerCount.clear()
+        self.playerCountScore.clear()
         
-    # Function to clear the terminal screen
     def clear(self):
         os.system('cls' if os.name == 'nt' else 'clear') 
     
     def displayCards(self):
         self.clear()        
-        print("------------------------------------------------------------------------------------------------\n")
-        print("-------------------------------BlackJack game currently active----------------------------------\n")
-        print("Player count:", len(self.playerCount), "\n")
-        print("Cards remaining in deck", len(self.deck))
-        print("------------------------------------------------------------------------------------------------\n")
+        if (self.startedGame):
+            print("------------------------------------------------------------------------------------------------\n")
+            print("-------------------------------BlackJack game currently active----------------------------------\n")
+            print("Player count:", len(self.playerCount), "\n")
+            print("Cards remaining in deck", len(self.deck))
+            print("------------------------------------------------------------------------------------------------\n")
+        else:
+            print("------------------------------------------------------------------------------------------------\n")
+            print("-----------------------------------BlackJack game Inactive--------------------------------------\n")
+            print("Player count:", len(self.playerCount), "\n")
+            print("Cards remaining in deck", len(self.deck))
+            print("------------------------------------------------------------------------------------------------\n")
         
         #print each players cards that they have in hand
         if(len(self.playerCount) != 0):
