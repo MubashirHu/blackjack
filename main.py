@@ -6,21 +6,27 @@ dealer = BJ.blackJackModerator()
 #p2 = player.Player("Mike", 34)
 #dealer.playerCount.append(p1)
 #dealer.playerCount.append(p2)
+dealer.Entry()
 
 def main():
 
     while (1):
-        dealer.Entry()
-
-        while(dealer.startedGame):
+        
+        #round has started
+        while (dealer.currentRound <= dealer.numberofRounds and dealer.startedGame):
 
             if(not dealer.hasDealtFirstTwoCards):
                 dealer.getBetsFromPlayers()
                 dealer.dealCards()
             else:
                 dealer.checkforHitorStand()
-        else:
-            pass
 
+            dealer.checkforPlayers()
+        else:
+            print("The game of black jack has ended!\n would you like to play again?")
+            x = dealer.checkIfPlayersWantToPlayMoreRounds()
+            if x == 404:
+                break
+        
 if __name__ == "__main__":
     main()

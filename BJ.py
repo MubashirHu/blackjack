@@ -9,10 +9,13 @@ class blackJackModerator:
         self.hasDealtFirstTwoCards = False
         self.playerCount = []
         self.playerCountScore = []
+        self.playerCountRoundUpdate = []
         self.hand = []
         self.handVal = 0
         self.winner = ""
         self.max = 0
+        self.numberofRounds = 3
+        self.currentRound = 1
         self.deck = [("Hearts", 2), ("Hearts", 3), ("Hearts", 4), ("Hearts", 5), ("Hearts", 6), ("Hearts", 7), ("Hearts", 8), ("Hearts", 9), ("Hearts", 10), ("Hearts", "J"), ("Hearts", "Q"), ("Hearts", "K"), ("Hearts", "A"),
         ("Diamonds", 2), ("Diamonds", 3), ("Diamonds", 4), ("Diamonds", 5), ("Diamonds", 6), ("Diamonds", 7), ("Diamonds", 8), ("Diamonds", 9), ("Diamonds", 10), ("Diamonds", "J"), ("Diamonds", "Q"), ("Diamonds", "K"), ("Diamonds", "A"),
         ("Clubs", 2), ("Clubs", 3), ("Clubs", 4), ("Clubs", 5), ("Clubs", 6), ("Clubs", 7), ("Clubs", 8), ("Clubs", 9), ("Clubs", 10), ("Clubs", "J"), ("Clubs", "Q"), ("Clubs", "K"), ("Clubs", "A"),
@@ -62,19 +65,17 @@ class blackJackModerator:
                 age = input()
                 playerobj = Player(name, int(age))
                 self.playerCount.append(playerobj)
+                self.playerCountRoundUpdate.append(playerobj)
 
             for i in reversed(range(len(self.playerCount))):
                 self.checkAge(self.playerCount[i])
+                self.checkAge(self.playerCountRoundUpdate[i])
 
             self.shouldGameBegin()
         else:
             print("No players...")
             self.resetGame()
 
-    def resetGame(self):
-        self.startedGame = False
-        self.hasDealtFirstTwoCards = False
-        
     def shouldGameBegin(self):
         print("Would you like to begin the game?")
         x = input()
@@ -130,7 +131,7 @@ class blackJackModerator:
                 self.displayCards()
                 self.compareWithDealer(currentPlayer)
                 self.displayCards()
-                
+
     def checkforBust(self, playerID):
         if(self.playerCount[playerID].handVal > 21):
             print(self.playerCount[playerID].player_name, "...has Busted!")
@@ -145,8 +146,6 @@ class blackJackModerator:
 
         else:
             pass
-
-        self.checkforPlayers()
             
     def compareWithDealer(self, playerID):
         if(self.playerCount[playerID].handVal < 21 and self.playerCount[playerID].handVal < self.handVal):
@@ -165,8 +164,6 @@ class blackJackModerator:
             self.playerCountScore.append(self.playerCount[playerID])
             self.playerCount.remove(self.playerCount[playerID])
 
-        self.checkforPlayers()
-
     def checkforPlayers(self):
         if(len(self.playerCount) < 1):
             self.retreiveCardsfromDealer()
@@ -178,8 +175,12 @@ class blackJackModerator:
 
             if(self.max != 0):
                 print("The winner is :", self.winner, "with a score of : ", self.max)
+            elif(self.max == self.handVal):
+                print("No one wins...")
             else:
                 print("Dealer wins...unlucky!")
+
+            self.nextRound()
  
     def retreiveCardsfromPlayer(self, playerID):
         self.deck.extend(self.playerCount[playerID].hand)
@@ -233,23 +234,56 @@ class blackJackModerator:
         self.hasDealtFirstTwoCards = False
         self.playerCount.clear()
         self.playerCountScore.clear()
-        
+
+    def nextRound(self):
+        self.playerCountScore.clear()
+        for i in range(len(self.playerCountRoundUpdate)):
+            self.playerCount.append(self.playerCountRoundUpdate[i])
+
+        self.hasDealtFirstTwoCards = False
+        self.currentRound += 1
+
+    def checkIfPlayersWantToPlayMoreRounds(self):
+
+        print("Do you want to play more rounds? y/n")
+        x = input()
+        if x == 'y':
+            self.currentRound = 1
+            self.startedGame = True
+        else:
+            print("Thanks for playing with us...Goodluck!")
+            return 404
+
     def clear(self):
         os.system('cls' if os.name == 'nt' else 'clear') 
     
     def displayCards(self):
-        self.clear()        
+        #self.clear()        
         if (self.startedGame):
             print("------------------------------------------------------------------------------------------------\n")
             print("-------------------------------BlackJack game currently active----------------------------------\n")
+            print("Round:", self.currentRound)
             print("Player count:", len(self.playerCount), "\n")
             print("Cards remaining in deck", len(self.deck))
+            print("Players on Standby:\n")
+            for i in range(len(self.playerCountScore)):
+                print(self.playerCountScore[i].player_name, "\n")
+            print("Players currently playing:\n")
+            for i in range(len(self.playerCount)):
+                print(self.playerCount[i].player_name, "\n")
             print("------------------------------------------------------------------------------------------------\n")
         else:
             print("------------------------------------------------------------------------------------------------\n")
             print("-----------------------------------BlackJack game Inactive--------------------------------------\n")
+            print("Round:", self.currentRound)
             print("Player count:", len(self.playerCount), "\n")
             print("Cards remaining in deck", len(self.deck))
+            print("Players on Standby:\n")
+            for i in range(len(self.playerCountScore)):
+                print(self.playerCountScore[i].player_name, "\n")
+            print("Players currently playing:\n")
+            for i in range(len(self.playerCount)):
+                print(self.playerCount[i].player_name, "\n")
             print("------------------------------------------------------------------------------------------------\n")
         
         #print each players cards that they have in hand
@@ -257,7 +291,7 @@ class blackJackModerator:
 
             #print Dealers cards
             print(self.hand)
-            print("Dealer Value: ", self.getHandValue(304), "\n\n\n")
+            print("Dealer Value: ", self.getHandValue(304), "\n\n")
 
             for eachplayer in range(len(self.playerCount)):
                 print("Player: |", self.playerCount[eachplayer].player_name, "|")
@@ -266,6 +300,3 @@ class blackJackModerator:
 
                 print("----------------------------")
                 print(self.playerCount[eachplayer].player_name, "Hand Value: ", self.getHandValue(eachplayer), "\n\n")
-        else:
-            self.resetGame()
-            print("Round of black jack is over!")
